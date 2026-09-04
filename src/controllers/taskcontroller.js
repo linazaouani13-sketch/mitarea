@@ -23,3 +23,20 @@ exports.createTask = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 };
+
+
+exports.getalltasks = async (req, res) => {
+
+    try{
+
+const tasks = await prisma.task.findMany({
+  where: { userId: req.user.userId }
+})
+
+return res.status(200).json({message: 'Tasks retrieved successfully', tasks: tasks});
+
+    }catch(error){
+           console.error('Error during task listing:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+}
