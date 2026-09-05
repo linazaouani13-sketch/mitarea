@@ -92,3 +92,21 @@ if (status!== undefined) dataToUpdate.status = status
         return res.status(500).json({ message: 'Server error' });
     }
 }
+
+exports.deletetask = async (req,res) =>{
+    try{
+        const taskId = Number(req.params.id)
+        const task =await prisma.task.findUnique({ where: { id: taskId } })
+        if(!task){
+            return res.status(404).json({ message: 'this task do not exist' })}
+        if(task.userId !== req.user.userId){
+            return res.status(404).json({ message: 'this task do not belong to this user' })}
+         
+             await prisma.task.delete({ where: { id: taskId } })
+
+            return res.status(200).json({ message: 'Task deleted successfully' });
+    }catch(error){
+        console.error('Error during task deletion:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+}
