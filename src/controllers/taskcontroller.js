@@ -61,3 +61,34 @@ try{
 
 }
 }
+
+exports.edittask = async (req, res) => {
+    try{ 
+         const taskId = Number(req.params.id)
+        const { title, description, status } = req.body;
+  const task = await prisma.task.findUnique({ where: { id: taskId } })
+    if(!task){
+        return res.status(404).json({ message: 'this task do not exist' });
+    }
+    if(task.userId !== req.user.userId){
+        return res.status(404).json({ message:"this task do not belong to this user"})
+    }
+    const dataToUpdate = {}
+
+if (title!== undefined) dataToUpdate.title = title
+if (description!== undefined) dataToUpdate.description = description
+if (status!== undefined) dataToUpdate.status = status
+
+ const updatedTask = await prisma.task.update({
+  where: { id: taskId },
+  data: dataToUpdate
+})
+
+  return res.status(200).json({message: 'Task edited successfully', task: updatedTask});
+
+
+    }catch(error){
+        console.error('Error during task editing:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+}
