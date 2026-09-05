@@ -40,3 +40,24 @@ return res.status(200).json({message: 'Tasks retrieved successfully', tasks: tas
         return res.status(500).json({ message: 'Server error' });
     }
 }
+
+
+exports.getTaskbyId = async( req,res) =>{
+try{
+  const taskId = Number(req.params.id)
+
+  const task = await prisma.task.findUnique({ where: { id: taskId } })
+    if(!task){
+        return res.status(404).json({ message: 'this task do not exist' });
+    }
+    if(task.userId !== req.user.userId){
+        return res.status(404).json({ message:"this task do not belong to this user"})
+    }
+  return res.status(200).json({message: 'Task retrieved successfully', task: task});
+
+}catch(error){
+   console.error('error during getting this task :', error);
+        return res.status(500).json({ message: 'Server error' });
+
+}
+}
