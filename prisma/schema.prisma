@@ -17,6 +17,7 @@ model User {
   email String @unique
   passwordHash String
   tasks Task[]
+  categories Category[]
 }
 
 model Task {
@@ -26,4 +27,15 @@ model Task {
   title String
   description String?
   status Status @default(TODO)
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  color  String?
+  userId Int
+  user   User    @relation(fields: [userId], references: [id])
+  tasks  Task[]
 }
