@@ -2,16 +2,23 @@ const prisma = require('../lib/prisma');
 
 exports.createTask = async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description ,categoryId} = req.body;
 
         if (!title) {
             return res.status(400).json({ message: 'Title is required' });
         }
+        if (categoryId) {
+    const category = await prisma.category.findUnique({ where: { id: categoryId } })
+    if (!category || category.userId !== req.user.userId) {
+        return res.status(400).json({ message: 'Invalid category' })
+    }
+}
 
         const newTask = await prisma.task.create({
             data: {
                 title: title,
                 description: description,
+                categoryId: categoryId,
                 userId: req.user.userId
             }
         });
